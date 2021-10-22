@@ -1,10 +1,22 @@
 {% extends 'main/layout.html'%}
 
+{% block head%}
+    <script>
+        const getTest = div => {
+            div.innerHTML = '';
+            for (let i = 0; i < 5; i++)
+                div.innerHTML += '<div class="card">jopa</div>'
+        };
+    </script>
+{% endblock %}
+
 {% block content %}
     <div class="features">
         <h1>Упражнение 1.2</h1>
-        <p>Some text</p>
-        <button class="btn btn-danger">На страницу про нас</button>
+        <div>
+            <button class="btn btn-success" onclick="getTest(this.parentNode)">Get words</button>
+        </div><br>
+        <button class="btn btn-danger" onclick="location.href = '{% url 'home' %}';">На страницу про нас</button>
     </div>
 {% endblock %}
 
