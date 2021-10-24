@@ -1,7 +1,6 @@
 const Database = require('better-sqlite3');
+const { exec } = require('child_process');
 const { promisify } = require('util');
-const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));;
-const { parse } = require('node-html-parser');
 
 const DB_PATH = '../db.sqlite3';
 
@@ -15,37 +14,19 @@ const prepareDB = () => {
     return db;
 };
 
-const translate = async word =>
-    parse(await (await fetch('https://en.openrussian.org/en/' + encodeURIComponent(word))).text())
-    .querySelectorAll('ul.tls>li>h2>a')
-    .map(liNode => liNode.innerText);
-
-const parseSites = async () => [ // readability lvl 100. I did my best xD
-    ...parse(await (await fetch('https://englishstudyhere.com/grammar/100-abstract-nouns-in-english/')).text())
-    .querySelectorAll('div.thecontent.clearfix>ul')
-    .map(ulNode => ulNode.childNodes.map(liNode => liNode.innerText).filter(word => word != '\n'))
-    .flat(1)
-    .map(async word => ({ word, translations: await translate(word) }))
-];
-
-const parseAndFillDB = async () => {
+(async () => {
     const db = prepareDB();
 
-    let parsed = (await parseSites());
-    for (let [k, promise] of Object.entries(parsed))
-        parsed[k] = await promise;
-    parsed = parsed
-    .map(({word, translations}) => translations.map(translation => ({ word, translation })))
-    .flat(1);
+    let { stdout: sparsed } = await promisify(exec)('node --no-warnings parse.js');
+    let parsedData = JSON.parse(sparsed);
 
     let insert = db.prepare('INSERT INTO Table1 (word, translation) VALUES(@word, @translation)');
     db.transaction(() => {
-        for (let v of parsed) {
-            console.log(v);
+        for (let v of parsedData)
             insert.run(v);
-        }
     })();
 
+    // console.log(db.prepare('SELECT * FROM Table1 WHERE abst IS TRUE').all());
+
     db.close();
-};
-parseAndFillDB();
+})();
