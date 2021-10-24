@@ -21,10 +21,7 @@ const prepareDB = () => {
     let parsedData = JSON.parse(sparsed);
 
     let insert = db.prepare('INSERT INTO Table1 (word, translation) VALUES(@word, @translation)');
-    db.transaction(() => {
-        for (let v of parsedData)
-            insert.run(v);
-    })();
+    db.transaction(() => parsedData.forEach(v => insert.run(v)))();
 
     // console.log(db.prepare('SELECT * FROM Table1 WHERE abst IS TRUE').all());
 
