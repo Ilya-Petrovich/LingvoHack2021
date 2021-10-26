@@ -1,6 +1,6 @@
 from django.db import models
 
-class No:
+class No(models.Model):
 	word = models.CharField('word', max_length=50)
 	translation = models.CharField('translation', max_length=50)
 	abst = models.BooleanField('abst')
