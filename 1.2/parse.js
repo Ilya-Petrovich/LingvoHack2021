@@ -11,8 +11,16 @@ const parsedWords = {};
 const parseSites = async () => [ // readability lv100 xD
         ...parse(await (await fetch('https://englishstudyhere.com/grammar/100-abstract-nouns-in-english/')).text())
             .querySelectorAll('div.thecontent.clearfix>ul>li')
-            .map(liNode => liNode.innerText).filter(word => word != '\n')
+            .map(liNode => liNode.innerText)
+            .filter(word => word != '\n')
+            .flat(1),
+        ...parse(await (await fetch('https://englishstudyonline.org/abstract-nouns/')).text())
+            .querySelectorAll('ul')
+            .filter((_, i) => [9, 10].includes(i)) // mmm, magic numbers. Couldn't come up with a better idea for the filter.
+            .map(ulNode => ulNode.querySelectorAll('li'))
             .flat(1)
+            .map(liNode => liNode.innerText)
+
     ]
         .filter(word => (!(word in parsedWords) ? parsedWords[word] = true : false))
         .map(async word => ({
@@ -29,4 +37,5 @@ const parseSites = async () => [ // readability lv100 xD
         .flat(1);
     
     process.stdout.write(JSON.stringify(parsed) + '\n');
+    // console.log(parsed.length);
 })();
