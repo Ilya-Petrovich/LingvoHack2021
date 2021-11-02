@@ -1,8 +1,10 @@
 const Database = require('better-sqlite3');
 const { exec } = require('child_process');
+const { parse } = require('path');
+const { stdout } = require('process');
 const { promisify } = require('util');
 
-const DB_PATH = '../db.sqlite3';
+const DB_PATH = __dirname + '/../db.sqlite3';
 
 
 const prepareDB = () => {
@@ -17,13 +19,14 @@ const prepareDB = () => {
 (async () => {
     const db = prepareDB();
 
-    let { stdout: sparsed } = await promisify(exec)('node --no-warnings parse.js');
+    let { stdout: sparsed } = await promisify(exec)(`node --no-warnings ${__dirname}/parse.js`);
     let parsedData = JSON.parse(sparsed);
 
     let insert = db.prepare('INSERT INTO Table1 (word, translation) VALUES(@word, @translation)');
     db.transaction(() => parsedData.forEach(v => insert.run(v)))();
 
     // console.log(db.prepare('SELECT * FROM Table1 WHERE abst IS TRUE').all());
+    stdout.write('ok');
 
     db.close();
 })();
