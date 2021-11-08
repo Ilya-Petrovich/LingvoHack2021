@@ -6,7 +6,7 @@
   "author": "Foresteam",
   "license": "MIT",
   "scripts": {
-    "parse": "node parseAndAppend.js"
+    "parsenload": "node parseAndAppend.js"
   },
   "dependencies": {
     "better-sqlite3": "^7.4.3",

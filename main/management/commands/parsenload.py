@@ -10,5 +10,6 @@ class Command(BaseCommand):
 		try:
 			status = subprocess.check_output(['node', '--no-warnings', '1.2/parseAndAppend.js']).decode('utf-8')
 		except: pass
+		
 		if status != 'ok':
 			print('Дружочек-пирожочек! Было бы не плохо, прежде чем пытаться запускать что-то, сначала прочитать README.')
